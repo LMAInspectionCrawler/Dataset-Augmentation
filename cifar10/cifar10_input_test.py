@@ -27,8 +27,10 @@ import cifar10_input
 
 
 class CIFAR10InputTest(tf.test.TestCase):
+  print "Running Cifar10InputTest"
 
   def _record(self, label, red, green, blue):
+    print "Running input test _record"
     image_size = 32 * 32
     record = bytes(bytearray([label] + [red] * image_size +
                              [green] * image_size + [blue] * image_size))
@@ -36,6 +38,7 @@ class CIFAR10InputTest(tf.test.TestCase):
     return record, expected
 
   def testSimple(self):
+    print "Running testSimple"
     labels = [9, 3, 0]
     records = [self._record(labels[0], 0, 128, 255),
                self._record(labels[1], 255, 0, 1),
@@ -63,4 +66,5 @@ class CIFAR10InputTest(tf.test.TestCase):
 
 
 if __name__ == "__main__":
+  print "Running cifar10_input_test.py"
   tf.test.main()

@@ -60,6 +60,7 @@ tf.app.flags.DEFINE_boolean('run_once', False,
 
 
 def eval_once(saver, summary_writer, top_k_op, summary_op):
+  print "Running eval once"
   """Run Eval once.
 
   Args:
@@ -114,6 +115,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
 
 
 def evaluate():
+  print "Running evaluate"
   """Eval CIFAR-10 for a number of steps."""
   with tf.Graph().as_default() as g:
     # Get images and labels for CIFAR-10.
@@ -146,6 +148,7 @@ def evaluate():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
+print "Running cifar10_eval.py main"
   cifar10.maybe_download_and_extract()
   if tf.gfile.Exists(FLAGS.eval_dir):
     tf.gfile.DeleteRecursively(FLAGS.eval_dir)
@@ -154,4 +157,5 @@ def main(argv=None):  # pylint: disable=unused-argument
 
 
 if __name__ == '__main__':
+  print "Running cifar10_eval.py"
   tf.app.run()

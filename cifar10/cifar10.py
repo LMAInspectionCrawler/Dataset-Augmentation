@@ -45,6 +45,8 @@ import tensorflow as tf
 
 import cifar10_input
 
+print "Starting cifar10.py"
+
 FLAGS = tf.app.flags.FLAGS
 
 # Basic model parameters.
@@ -77,6 +79,7 @@ DATA_URL = 'https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
 
 
 def _activation_summary(x):
+  print "Running acitivation_summary"
   """Helper to create summaries for activations.
 
   Creates a summary that provides a histogram of activations.
@@ -96,6 +99,7 @@ def _activation_summary(x):
 
 
 def _variable_on_cpu(name, shape, initializer):
+  print "Running variable on cpu"
   """Helper to create a Variable stored on CPU memory.
 
   Args:
@@ -113,6 +117,7 @@ def _variable_on_cpu(name, shape, initializer):
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd):
+  print "Running variable with weight decay"
   """Helper to create an initialized Variable with weight decay.
 
   Note that the Variable is initialized with a truncated normal distribution.
@@ -140,6 +145,7 @@ def _variable_with_weight_decay(name, shape, stddev, wd):
 
 
 def distorted_inputs():
+  print "Runnning distorded inputs"
   """Construct distorted input for CIFAR training using the Reader ops.
 
   Returns:
@@ -161,6 +167,7 @@ def distorted_inputs():
 
 
 def inputs(eval_data):
+  print "Running inputs"
   """Construct input for CIFAR evaluation using the Reader ops.
 
   Args:
@@ -186,6 +193,7 @@ def inputs(eval_data):
 
 
 def inference(images):
+  print "Running inference"
   """Build the CIFAR-10 model.
 
   Args:
@@ -272,6 +280,7 @@ def inference(images):
 
 
 def loss(logits, labels):
+  print "Running loss"
   """Add L2Loss to all the trainable variables.
 
   Add summary for "Loss" and "Loss/avg".
@@ -296,6 +305,7 @@ def loss(logits, labels):
 
 
 def _add_loss_summaries(total_loss):
+  print "Running add loss summaries"
   """Add summaries for losses in CIFAR-10 model.
 
   Generates moving average for all losses and associated summaries for
@@ -323,6 +333,7 @@ def _add_loss_summaries(total_loss):
 
 
 def train(total_loss, global_step):
+  print "Running train"
   """Train CIFAR-10 model.
 
   Create an optimizer and apply to all trainable variables. Add moving
@@ -377,6 +388,7 @@ def train(total_loss, global_step):
 
 
 def maybe_download_and_extract():
+  print "Running maybe download and extract"
   """Download and extract the tarball from Alex's website."""
   dest_directory = FLAGS.data_dir
   if not os.path.exists(dest_directory):
