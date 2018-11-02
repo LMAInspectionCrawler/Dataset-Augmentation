@@ -1,0 +1,1 @@
+# Similar to cifar10_input

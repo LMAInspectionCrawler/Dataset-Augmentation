@@ -48,7 +48,9 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
-tf.app.flags.DEFINE_integer('max_steps', 100000,
+#tf.app.flags.DEFINE_integer('max_steps', 100000,
+#                            """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('max_steps', 100,
                             """Number of batches to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
@@ -57,7 +59,7 @@ tf.app.flags.DEFINE_integer('log_frequency', 10,
 
 
 def train():
-  print "cifar10_train.py Train"
+  print("cifar10_train.py Train")
   """Train CIFAR-10 for a number of steps."""
   with tf.Graph().as_default():
     global_step = tf.train.get_or_create_global_step()
@@ -80,21 +82,19 @@ def train():
     train_op = cifar10.train(loss, global_step)
 
     class _LoggerHook(tf.train.SessionRunHook):
-      print "Running _LoggerHook"
+      print("Running _LoggerHook")
       """Logs loss and runtime."""
 
       def begin(self):
-        print "begin"
+        print("begin")
         self._step = -1
         self._start_time = time.time()
 
       def before_run(self, run_context):
-        print "Running before_run"
         self._step += 1
         return tf.train.SessionRunArgs(loss)  # Asks for loss value.
 
       def after_run(self, run_context, run_values):
-        print "Running after_run"
         if self._step % FLAGS.log_frequency == 0:
           current_time = time.time()
           duration = current_time - self._start_time
@@ -121,7 +121,7 @@ def train():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
-  print "Running cifar10_train.py main"
+  print("Running cifar10_train.py main")
   cifar10.maybe_download_and_extract()
   if tf.gfile.Exists(FLAGS.train_dir):
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
@@ -130,5 +130,5 @@ def main(argv=None):  # pylint: disable=unused-argument
 
 
 if __name__ == '__main__':
-  print "Running cifar10_train.py"
+  print("Running cifar10_train.py")
   tf.app.run()
