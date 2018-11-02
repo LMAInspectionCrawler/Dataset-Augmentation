@@ -3,3 +3,4 @@ This repository will contain the original images, the script that will augment t
 
 # Sources
 * https://www.tensorflow.org/tutorials/images/image_recognition
+* https://www.isic-archive.com/#!/topWithHeader/onlyHeaderTop/gallery
