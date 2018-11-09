@@ -12,17 +12,17 @@ import tarfile
 from six.moves import urllib
 import tensorflow as tf
 
-#import load
+import load
 
 FLAGS = tf.app.flags.FLAGS
 
 # Basic model parameters.
 tf.app.flags.DEFINE_integer('batch_size', 128,
-                            """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_string('data_dir', '/Users/research/Desktop/resizedImages',
-                           """Path to the images data directory.""")
+							"""Number of images to process in a batch.""")
+tf.app.flags.DEFINE_string('data_dir', '/Users/martinmorales/Desktop/Dataset-Augmentation/Augmented Subset Images/',
+						   """Path to the images data directory.""")
 tf.app.flags.DEFINE_boolean('use_fp16', False,
-                            """Train the model using fp16.""")
+							"""Train the model using fp16.""")
 
 # Global constants describing the data set.
 IMAGE_SIZE = load.IMAGE_SIZE
@@ -31,13 +31,15 @@ NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = load.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = load.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
 # Constants describing the training process.
-MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
-NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
+MOVING_AVERAGE_DECAY = 0.9999	 # The decay to use for the moving average.
+NUM_EPOCHS_PER_DECAY = 350.0	  # Epochs after which learning rate decays.
 LEARNING_RATE_DECAY_FACTOR = 0.1  # Learning rate decay factor.
-INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
+INITIAL_LEARNING_RATE = 0.1	   # Initial learning rate.
 
 
 TOWER_NAME = 'tower'
+
+DATA_URL = 'https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
 
 def _activation_summary(x):
 	"""Helper to create summaries for activations.
@@ -53,7 +55,7 @@ def _activation_summary(x):
 	tensor_name = re.sub('%s_[0-9]*/' % TOWER_NAME, '', x.op.name)
 	tf.summary.histogram(tensor_name + '/activations', x)
 	tf.summary.scalar(tensor_name + '/sparsity',
-                                       tf.nn.zero_fraction(x))
+									   tf.nn.zero_fraction(x))
 
 def _variable_on_cpu(name, shape, initializer):
 	"""Helper to create a Variable stored on CPU memory.
@@ -78,7 +80,7 @@ def _variable_with_weight_decay(name, shape, stddev, wd):
 		shape: list of ints
 		stddev: standard deviation of a truncated Gaussian
 		wd: add L2Loss weight decay multiplied by this float. If None, weight
-	    decay is not added for this Variable.
+		decay is not added for this Variable.
 	Returns:
 		Variable Tensor
 	"""
@@ -104,7 +106,7 @@ def distorted_inputs():
 		raise ValueError('Please supply a data_dir')
 	data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
 	images, labels = load.augmented_inputs(data_dir=data_dir,
-	                                              batch_size=FLAGS.batch_size)
+												  batch_size=FLAGS.batch_size)
 	if FLAGS.use_fp16:
 		images = tf.cast(images, tf.float16)
 		labels = tf.cast(labels, tf.float16)
@@ -125,8 +127,8 @@ def inputs(eval_data):
 		raise ValueError('Please supply a data_dir')
 	data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
 	images, labels = load.inputs(eval_data=eval_data,
-	                                    data_dir=data_dir,
-	                                    batch_size=FLAGS.batch_size)
+										data_dir=data_dir,
+										batch_size=FLAGS.batch_size)
 	if FLAGS.use_fp16:
 		images = tf.cast(images, tf.float16)
 		labels = tf.cast(labels, tf.float16)
@@ -148,57 +150,57 @@ def inference(images):
 
 	# conv1
 	with tf.variable_scope('conv1') as scope:
-    	kernel = _variable_with_weight_decay('weights',
-                                         shape=[5, 5, 3, 64],
-                                         stddev=5e-2,
-                                         wd=None)
-    	conv = tf.nn.conv2d(images, kernel, [1, 1, 1, 1], padding='SAME')
-    	biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.0))
-    	pre_activation = tf.nn.bias_add(conv, biases)
-    	conv1 = tf.nn.relu(pre_activation, name=scope.name)
-    	_activation_summary(conv1)
+		kernel = _variable_with_weight_decay('weights',
+										 shape=[5, 5, 3, 64],
+										 stddev=5e-2,
+										 wd=None)
+		conv = tf.nn.conv2d(images, kernel, [1, 1, 1, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.0))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv1 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv1)
 
 	# pool1
 	pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
-	                     padding='SAME', name='pool1')
+						 padding='SAME', name='pool1')
 	# norm1
 	norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
-	                name='norm1')
+					name='norm1')
 
 	# conv2
 	with tf.variable_scope('conv2') as scope:
 		kernel = _variable_with_weight_decay('weights',
-	                                         shape=[5, 5, 64, 64],
-	                                         stddev=5e-2,
-	                                         wd=None)
-	    conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
-	    biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
-	    pre_activation = tf.nn.bias_add(conv, biases)
-	    conv2 = tf.nn.relu(pre_activation, name=scope.name)
-	    _activation_summary(conv2)
+											 shape=[5, 5, 64, 64],
+											 stddev=5e-2,
+											 wd=None)
+		conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
+		biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
+		pre_activation = tf.nn.bias_add(conv, biases)
+		conv2 = tf.nn.relu(pre_activation, name=scope.name)
+		_activation_summary(conv2)
 
 	# norm2
 	norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
-	                    name='norm2')
+						name='norm2')
 	# pool2
 	pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
-	                         strides=[1, 2, 2, 1], padding='SAME', name='pool2')
+							 strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
 	# local3
   	with tf.variable_scope('local3') as scope:
-    # Move everything into depth so we can perform a single matrix multiply.
-    	reshape = tf.reshape(pool2, [images.get_shape().as_list()[0], -1])
-    dim = reshape.get_shape()[1].value
-    weights = _variable_with_weight_decay('weights', shape=[dim, 384],
-                                          stddev=0.04, wd=0.004)
-    biases = _variable_on_cpu('biases', [384], tf.constant_initializer(0.1))
-    local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
-    _activation_summary(local3)
+	# Move everything into depth so we can perform a single matrix multiply.
+		reshape = tf.reshape(pool2, [images.get_shape().as_list()[0], -1])
+	dim = reshape.get_shape()[1].value
+	weights = _variable_with_weight_decay('weights', shape=[dim, 384],
+										  stddev=0.04, wd=0.004)
+	biases = _variable_on_cpu('biases', [384], tf.constant_initializer(0.1))
+	local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+	_activation_summary(local3)
 
 	# local4
 	with tf.variable_scope('local4') as scope:
 		weights = _variable_with_weight_decay('weights', shape=[384, 192],
-	                                      stddev=0.04, wd=0.004)
+										  stddev=0.04, wd=0.004)
 		biases = _variable_on_cpu('biases', [192], tf.constant_initializer(0.1))
 		local4 = tf.nn.relu(tf.matmul(local3, weights) + biases, name=scope.name)
 		_activation_summary(local4)
@@ -209,9 +211,9 @@ def inference(images):
 	# and performs the softmax internally for efficiency.
 	with tf.variable_scope('softmax_linear') as scope:
 		weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
-	                          stddev=1/192.0, wd=None)
+							  stddev=1/192.0, wd=None)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES],
-	              tf.constant_initializer(0.0))
+				  tf.constant_initializer(0.0))
 		softmax_linear = tf.add(tf.matmul(local4, weights), biases, name=scope.name)
 		_activation_summary(softmax_linear)
 
@@ -224,7 +226,7 @@ def loss(logits, labels):
 	Args:
 	logits: Logits from inference().
 	labels: Labels from distorted_inputs or inputs(). 1-D tensor
-	        of shape [batch_size]
+			of shape [batch_size]
 	Returns:
 	Loss tensor of type float.
 	"""
@@ -281,10 +283,10 @@ def train(total_loss, global_step):
 
 	# Decay the learning rate exponentially based on the number of steps.
 	lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
-	                              global_step,
-	                              decay_steps,
-	                              LEARNING_RATE_DECAY_FACTOR,
-	                              staircase=True)
+								  global_step,
+								  decay_steps,
+								  LEARNING_RATE_DECAY_FACTOR,
+								  staircase=True)
 	tf.summary.scalar('learning_rate', lr)
 
 	# Generate moving averages of all losses and associated summaries.
@@ -326,7 +328,7 @@ def maybe_download_and_extract():
 	if not os.path.exists(filepath):
 		def _progress(count, block_size, total_size):
 	  		sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
-	      		float(count * block_size) / float(total_size) * 100.0))
+		  		float(count * block_size) / float(total_size) * 100.0))
 	  		sys.stdout.flush()
 		filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath, _progress)
 		print()

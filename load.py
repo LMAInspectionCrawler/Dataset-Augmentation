@@ -66,7 +66,7 @@ def read_images(filename_queue):
 	return result
 
 def _generate_image_and_label_batch(image, label, min_queue_examples,
-									batch_size):
+									batch_size, shuffle):
 	""" Construct a queued batch of images and labels
 	Args:
 		image: 3D Tensor of [height, width, 3] of type.float32
@@ -130,7 +130,7 @@ def augmented_inputs(data_dir, batch_size):
 		width = IMAGE_SIZE
 
 		# TODO: Don't crop, resize it
-		cropped_image = tf.random_cropy(reshaped_image, [height, width, 3])
+		cropped_image = tf.random_crop(reshaped_image, [height, width, 3])
 
 		augmented_image = tf.image.random_flip_left_right(cropped_image)
 		augmented_image = tf.image.random_brightness(augmented_image, max_delta = 63)
