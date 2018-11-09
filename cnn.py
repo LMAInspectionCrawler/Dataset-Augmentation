@@ -153,10 +153,13 @@ def distorted_inputs():
 		raise ValueError('Please supply a data_dir')
 	data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
 	images, labels = myInput.distorted_inputs(data_dir=data_dir,
-																									batch_size=FLAGS.batch_size)
+											batch_size=FLAGS.batch_size)
+	
+	print ("cnn.py/distorted_inputs(): EVERYBODY WATCH OUT. MARTIN IS DEBUGGING. image type: " + str(type(images)) + " labels type: " + str(type(labels)))
 	if FLAGS.use_fp16:
 		images = tf.cast(images, tf.float16)
 		labels = tf.cast(labels, tf.float16)
+
 	return images, labels
 
 

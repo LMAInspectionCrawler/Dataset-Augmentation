@@ -57,9 +57,10 @@ def read_cifar10(filename_queue):
 			uint8image: a [height, width, depth] uint8 Tensor with the image data
 	"""
 
-	class CIFAR10Record(object):
+	# Contains image and label
+	class Record(object):
 		pass
-	result = CIFAR10Record()
+	result = Record()
 
 	# Dimensions of the images in the CIFAR-10 dataset.
 	# See http://www.cs.toronto.edu/~kriz/cifar.html for a description of the
@@ -162,6 +163,8 @@ def distorted_inputs(data_dir, batch_size):
 		read_input = read_cifar10(filename_queue)
 		reshaped_image = tf.cast(read_input.uint8image, tf.float32)
 
+		print ("myInput.py/distorted_inputs read_input: " + str(type(read_input)) + " " + str(read_input))
+	
 		height = IMAGE_SIZE
 		width = IMAGE_SIZE
 
@@ -198,9 +201,10 @@ def distorted_inputs(data_dir, batch_size):
 					 'This will take a few minutes.' % min_queue_examples)
 
 	# Generate a batch of images and labels by building up a queue of examples.
+	
 	return _generate_image_and_label_batch(float_image, read_input.label,
-																				 min_queue_examples, batch_size,
-																				 shuffle=True)
+											min_queue_examples, batch_size,
+											shuffle=True)
 
 
 def inputs(eval_data, data_dir, batch_size):
