@@ -36,7 +36,6 @@ NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000
 
 
 def read_cifar10(filename_queue):
-  print("Running read_cifar10")
   """Reads and parses examples from CIFAR10 data files.
 
   Recommendation: if you want N-way read parallelism, call this function
@@ -101,7 +100,6 @@ def read_cifar10(filename_queue):
 
 def _generate_image_and_label_batch(image, label, min_queue_examples,
                                     batch_size, shuffle):
-  print("Generate image and label batch")
   """Construct a queued batch of images and labels.
 
   Args:
@@ -140,7 +138,6 @@ def _generate_image_and_label_batch(image, label, min_queue_examples,
 
 
 def distorted_inputs(data_dir, batch_size):
-  print("Running distorted inputs")
   """Construct distorted input for CIFAR training using the Reader ops.
 
   Args:
@@ -207,7 +204,6 @@ def distorted_inputs(data_dir, batch_size):
 
 
 def inputs(eval_data, data_dir, batch_size):
-  print("Running inputs")
   """Construct input for CIFAR evaluation using the Reader ops.
 
   Args:
