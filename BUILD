@@ -7,7 +7,7 @@ exports_files(["LICENSE"])
 
 py_library(
 	name = "cifar10_input",
-	srcs = ["cifar10_input.py"],
+	srcs = ["myInput.py"],
 	srcs_version = "PY2AND3",
 	visibility = ["//tensorflow:internal"],
 	deps = [
@@ -30,7 +30,7 @@ py_test(
 
 py_library(
 	name = "cifar10",
-	srcs = ["cifar10.py"],
+	srcs = ["cnn.py"],
 	srcs_version = "PY2AND3",
 	deps = [
 		":cifar10_input",

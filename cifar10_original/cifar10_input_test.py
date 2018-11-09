@@ -49,7 +49,7 @@ class CIFAR10InputTest(tf.test.TestCase):
       q = tf.FIFOQueue(99, [tf.string], shapes=())
       q.enqueue([filename]).run()
       q.close().run()
-      result = cifar10_input.read_cifar10(q)
+      result = myInput.read_cifar10(q)
 
       for i in range(3):
         key, label, uint8image = sess.run([
