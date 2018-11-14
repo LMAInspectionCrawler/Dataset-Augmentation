@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 import math
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'	# Disables CPU AVX2 FMA warning since we can't use it
 
 # Keras imports to build CNN model
 from tensorflow.python.keras.models import Sequential
@@ -23,7 +25,7 @@ def print_dataset_information(data):
 	print("- Validation-set:\t{}".format(data.num_val))
 	print("- Test-set:\t\t{}".format(data.num_test))
 
-def build_model(img_size_flat, img_shape_full, num_classes, num_channels):
+def build_model(data):
 	""" Builds sequential model """
 	# TODO: replace with a 3x(Conv + RELU + Pool) + 2x (FC)
 
@@ -32,11 +34,22 @@ def build_model(img_size_flat, img_shape_full, num_classes, num_channels):
 
 	# Add an input layer which is similar to a feed_dict in TensorFlow.
 	# Note that the input-shape must be a tuple containing the image-size.
-	model.add(InputLayer(input_shape=(img_size_flat * num_channels,), name='input_layer'))
+	#model.add(InputLayer(input_shape=(img_size_flat * num_channels,), name='input_layer'))
+	#test = ((data.img_size_flat * data.num_channels),)
+	#print "TESTING"
+	#print("img_shape_full: " + str(data.img_shape_full))
+	#print("img_size_flat: " + str(data.img_size_flat))
 
-	# The input is a flattened array with 784 elements,
-	# but the convolutional layers expect images with shape (28, 28, 1)
-	model.add(Reshape(img_shape_full))
+	#model.add(InputLayer(input_shape=((img_size_flat * num_channels),)))
+	model.add(InputLayer(input_shape=(data.img_size_flat,)))
+
+	# The input is a flattened array with 2352 elements,
+	# but the convolutional layers expect images with shape (28, 28, 3)
+	#test = Reshape(data.img_shape_full)
+	#test = Reshape(data.img_size_flat, 1, data.img_size, data.img_size)
+	#print str(type(test))
+	model.add(Reshape(data.img_shape_full))
+	#model.add(test)
 
 	# First convolutional layer with ReLU-activation and max-pooling.
 	model.add(Conv2D(kernel_size=5, strides=1, filters=16, padding='same',
@@ -57,9 +70,9 @@ def build_model(img_size_flat, img_shape_full, num_classes, num_channels):
 
 	# Last fully-connected / dense layer with softmax-activation
 	# for use in classification.
-	model.add(Dense(num_classes, activation='softmax', name="classify_layer"))
+	model.add(Dense(data.num_classes, activation='softmax', name="classify_layer"))
 
-	print(model.layers[0])
+
 	model.summary()
 
 	return model
@@ -127,7 +140,7 @@ def plot_images(images, cls_true, cls_pred=None):
 
 	for i, ax in enumerate(axes.flat):
 		# Plot image.
-		ax.imshow(images[i].reshape(img_shape), cmap='binary')
+		ax.imshow(images[i].reshape(data.img_shape_full), cmap='binary')
 
 		# Show true and predicted classes.
 		if cls_pred is None:
@@ -171,23 +184,13 @@ def plot_example_errors(cls_pred):
 				cls_pred=cls_pred[0:9])
 
 if __name__ == '__main__':
-	# data = MNIST("data/MNIST/")
-	data = load_ISIC("ISIC-images/UDA-1")
+	#data = MNIST("data/MNIST/")
+	data = load_ISIC("ISIC-images")
 
 	print_dataset_information(data)
-	#check_images(data)
+	check_images(data)
 
-	# Store helpful variables from dataset or set them yourself
-	# TODO: replace with ISIC dataset information
-	img_size = data.img_size 		# The number of pixels in each dimension of an image.
-	img_size_flat = data.img_size_flat 		# The images are stored in one-dimensional arrays of this length.
-	img_shape = data.img_shape 		# Tuple with height and width of images used to reshape arrays.
-	img_shape_full = data.img_shape_full 	# Tuple with height, width and depth used to reshape arrays. (Used by Keras)
-	num_classes = data.num_classes 		# Number of classes, one class for each of 10 digits.
-	num_channels = data.num_channels 	# Number of colour channels for the images: 1 channel for gray-scale.
-
-
-	model = build_model(img_size_flat, img_shape_full, num_classes, num_channels)	# TODO: refactor params
+	model = build_model(data)	# TODO: refactor params
 	model = compile_model(model)
 
 	model = train(model, data)

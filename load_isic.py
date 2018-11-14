@@ -15,7 +15,7 @@ def load_ISIC(path):
 	# TODO: reshape images
 
 	data.img_size = WIDTH		# Assuming width = height
-	data.img_size_flat = HEIGHT * WIDTH 	# When image is flattened into 1D array
+	data.img_size_flat = HEIGHT * WIDTH * CHANNELS 	# When image is flattened into 1D array
 	data.img_shape = HEIGHT, WIDTH
 	data.img_shape_full = HEIGHT, WIDTH, CHANNELS
 	data.num_classes = CLASSES
@@ -26,15 +26,15 @@ def load_ISIC(path):
 	val_stop_point = int(len(images) * SUBSET_DISTRO[1]) + train_stop_point
 
 	data.x_train = images[0:train_stop_point]
-	data.y_train = images[0:train_stop_point]		# Gets the one-hot classes (ex. 0.1, 0.0, 0.9)
+	data.y_train = labels[0:train_stop_point]		# Gets the one-hot classes (ex. 0.1, 0.0, 0.9)
 	data.y_train_cls = getTrueClasses(data.y_train)
 
 	data.x_val = images[train_stop_point:val_stop_point]
-	data.y_val = images[train_stop_point:val_stop_point]
+	data.y_val = labels[train_stop_point:val_stop_point]
 	data.y_val_cls = getTrueClasses(data.y_val)
 
 	data.x_test = images[val_stop_point:]
-	data.y_test = images[val_stop_point:]
+	data.y_test = labels[val_stop_point:]
 	data.y_test_cls = getTrueClasses(data.y_test)
 
 	data.num_train = len(data.x_train)
