@@ -10,6 +10,7 @@ WIDTH = HEIGHT = 28
 
 def load_ISIC(path):
 	""" Returns the ISIC dataset """
+	print("Loading dataset. This may take awhile")
 	data = Dataset()
 	images, labels = read_files(path)
 	# TODO: reshape images
@@ -92,7 +93,7 @@ def convert_label_to_one_hot(label):
 	elif label == 'malignant':
 		one_hot_label = np.array([0, 1])
 	else: 
-		print "Error: Unknown label. Label should be benign or malignant"
+		print("Error: Unknown label. Label should be benign or malignant")
 	return one_hot_label
 
 class Dataset:

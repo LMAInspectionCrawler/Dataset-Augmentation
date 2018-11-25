@@ -1,4 +1,5 @@
-# %matplotlib inline
+print("Importing libraries")
+
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
@@ -27,6 +28,7 @@ def print_dataset_information(data):
 
 def build_model(data):
 	""" Builds sequential model """
+	print("Building the model")
 	# TODO: replace with a 3x(Conv + RELU + Pool) + 2x (FC)
 
 	# Start construction of the Keras Sequential model.
@@ -79,7 +81,7 @@ def build_model(data):
 
 def compile_model(model):
 	""" Configures the model with the algorithms to use """
-
+	print("Compiling the model")
 	optimizer = Adam(lr=1e-3)
 	model.compile(optimizer=optimizer,
 			loss='categorical_crossentropy',
@@ -88,7 +90,7 @@ def compile_model(model):
 
 def train(model, data):
 	""" Trains the data with mini-batches """
-
+	print("Begin training")
 	callbacks = [
 		# Interrupt training if `val_loss` stops improving for over 2 epochs
 		tf.keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
@@ -106,7 +108,7 @@ def train(model, data):
 
 def evaluate(model, data):
 	""" Evaluates/tests the data by predicting and comparing to true labels """
-
+	print("Begin evaluation")
 	result = model.evaluate(
 		x=data.x_test,
 		y=data.y_test)
