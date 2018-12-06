@@ -185,9 +185,22 @@ def plot_example_errors(cls_pred):
 				cls_true=cls_true[0:9],
 				cls_pred=cls_pred[0:9])
 
+def run_TensorBoard():
+	#try-catch when exiting out of tensorboard with CTRL C
+	log_dir = "C:\\Users\\UTEP\\Desktop\\Dataset-Augmentation\\logs"
+	try:
+		#os.system("python36 -m tensorboard.main --logdir=" + log_dir)
+		#Runs tensorboard from log folder
+		os.system("tensorboard --logdir=" + log_dir)
+	except KeyboardInterrupt:
+		print("TensorBoard has stop running...")
+
 if __name__ == '__main__':
 	#data = MNIST("data/MNIST/")
 	data = load_ISIC("ISIC-images")
+	#print("TensorBoard can only use one event file at a time to generate a graph, Would you like to delete your current logs?")
+	
+	#Deletes all logs from folder : os.system("del C:\\Users\\UTEP\\Desktop\\Dataset-Augmentation\\logs\\*")
 
 	print_dataset_information(data)
 	check_images(data)
@@ -197,3 +210,7 @@ if __name__ == '__main__':
 
 	model = train(model, data)
 	result = evaluate(model, data)
+
+	run_TensorBoard()
+
+
